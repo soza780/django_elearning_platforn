@@ -1,3 +1,7 @@
+"""
+api urls of course application
+consist of course viewset and subjects list and detail
+"""
 from django.urls import path, include
 from rest_framework import routers
 from . import views

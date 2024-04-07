@@ -6,16 +6,20 @@ class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
         fields = [
-            'id',
-            'title',
-            'slug',
+            "id",
+            "title",
+            "slug",
         ]
 
 
 class ModuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Module
-        fields = ['order', 'title', 'description', ]
+        fields = [
+            "order",
+            "title",
+            "description",
+        ]
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -23,7 +27,16 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'title', 'subject', 'slug', 'overview', 'created', 'owner', 'modules']
+        fields = [
+            "id",
+            "title",
+            "subject",
+            "slug",
+            "overview",
+            "created",
+            "owner",
+            "modules",
+        ]
 
 
 class ItemRelatedField(serializers.RelatedField):
@@ -36,10 +49,29 @@ class ContentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Content
-        fields = ['order', 'item']
+        fields = ["order", "items"]
+
 
 class ModuleWithContentSerializer(serializers.ModelSerializer):
     contents = ContentSerializer(many=True)
+
     class Meta:
         model = Module
-        fields = ['order', 'title', 'description', 'contents']
+        fields = ["order", "title", "description", "contents"]
+
+
+class CourseWithContentSerializer(serializers.ModelSerializer):
+    modules = ModuleWithContentSerializer(many=True)
+
+    class Meta:
+        model = Course
+        fields = [
+            "id",
+            "subject",
+            "title",
+            "slug",
+            "overview",
+            "created",
+            "owner",
+            "modules",
+        ]
