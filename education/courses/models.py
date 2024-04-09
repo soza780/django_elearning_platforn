@@ -8,65 +8,80 @@ from django.template.loader import render_to_string
 
 # Create your models here.
 
+
 class Subject(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
 
     class Meta:
-        ordering = ('title',)
+        ordering = ("title",)
 
     def __str__(self):
         return self.title
 
 
 class Course(models.Model):
-    students = models.ManyToManyField(User, related_name='courses_joined', blank=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='courses_created')
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='courses')
+    students = models.ManyToManyField(User, related_name="courses_joined", blank=True)
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="courses_created"
+    )
+    subject = models.ForeignKey(
+        Subject, on_delete=models.CASCADE, related_name="courses"
+    )
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
     overview = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-created']
+        ordering = ["-created"]
 
     def __str__(self):
         return self.title
 
 
 class Module(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='modules')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="modules")
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
 
-    order = OrderField(blank=True, for_fields=['course'])
+    order = OrderField(blank=True, for_fields=["course"])
 
     class Meta:
-        ordering = ['order']
+        ordering = ["order"]
 
     def __str__(self):
-        return f'{self.order}. {self.title}'
+        return f"{self.order}. {self.title}"
 
 
 class Content(models.Model):
-    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='contents')
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, limit_choices_to={'model__in': (
-        'text',
-        'file',
-        'image',
-        'video',
-    )})
+    module = models.ForeignKey(
+        Module, on_delete=models.CASCADE, related_name="contents"
+    )
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        limit_choices_to={
+            "model__in": (
+                "text",
+                "file",
+                "image",
+                "video",
+            )
+        },
+    )
     object_id = models.PositiveIntegerField()
-    item = GenericForeignKey('content_type', 'object_id')
-    order = OrderField(blank=True, for_fields=['module'])
+    item = GenericForeignKey("content_type", "object_id")
+    order = OrderField(blank=True, for_fields=["module"])
 
     class Meta:
-        ordering = ['order']
+        ordering = ["order"]
 
 
 class ItemBase(models.Model):
-    owner = models.ForeignKey(User, related_name='%(class)s_related', on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        User, related_name="%(class)s_related", on_delete=models.CASCADE
+    )
     title = models.CharField(max_length=250)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -78,7 +93,9 @@ class ItemBase(models.Model):
         return self.title
 
     def render(self):
-        return render_to_string(f'courses/content/{self._meta.model_name}.html', {'item': self})
+        return render_to_string(
+            f"courses/content/{self._meta.model_name}.html", {"item": self}
+        )
 
 
 class Text(ItemBase):
@@ -86,11 +103,11 @@ class Text(ItemBase):
 
 
 class File(ItemBase):
-    file = models.FileField(upload_to='files')
+    file = models.FileField(upload_to="files")
 
 
 class Image(ItemBase):
-    file = models.FileField(upload_to='images')
+    file = models.FileField(upload_to="images")
 
 
 class Video(ItemBase):

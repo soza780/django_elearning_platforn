@@ -30,7 +30,7 @@ class StudentEnrollCourseView(LoginRequiredMixin, FormView):
     form_class = CourseEnrollForm
 
     def form_valid(self, form):
-        self.course = form.cleaned_data['course']
+        self.course = form.cleaned_data["course"]
         self.course.students.add(self.request.user)
         return super().form_valid(form)
 
@@ -40,7 +40,7 @@ class StudentEnrollCourseView(LoginRequiredMixin, FormView):
 
 class StudentCourseListView(LoginRequiredMixin, ListView):
     model = Course
-    template_name = 'students/course/list.html'
+    template_name = "students/course/list.html"
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -49,7 +49,7 @@ class StudentCourseListView(LoginRequiredMixin, ListView):
 
 class StudentCourseDetailView(DetailView):
     model = Course
-    template_name = 'students/course/detail.html'
+    template_name = "students/course/detail.html"
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -58,8 +58,8 @@ class StudentCourseDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         course = self.get_object()
-        if 'module_id' in self.kwargs:
-            context['module'] = course.modules.get(id=self.kwargs['module_id'])
+        if "module_id" in self.kwargs:
+            context["module"] = course.modules.get(id=self.kwargs["module_id"])
         else:
-            context['module'] = course.modules.all()[0]
+            context["module"] = course.modules.all()[0]
         return context
